@@ -6,7 +6,8 @@ AS = stm8-as
 MKDIR = mkdir
 CP = cp
 
-DEFINE = -DSTM8S003
+DEFINE = -DSTM8S208
+DEVICE_FLASH=stm8s208rb
 
 # Include settings
 INCLUDE = $(addprefix -I, inc/)
@@ -24,7 +25,8 @@ PROJECT = STM8
 # Compiled objects list
 OBJ_DIR = obj
 VPATH += src
-OBJECTS = $(addprefix $(OBJ_DIR)/, main.o bar.o)
+OBJECTS_SRC  = $(notdir $(wildcard $(VPATH)/*.c))
+OBJECTS = $(addprefix $(OBJ_DIR)/, $(OBJECTS_SRC:.c=.o))
 
 # Linker flags
 LD_FLAGS = -T./elf32stm8s003f3.x --print-memory-usage --gc-sections -Map $(OBJ_DIR)/map_$(PROJECT).map
@@ -43,6 +45,10 @@ $(OBJ_DIR)/$(PROJECT).elf: $(OBJECTS)
 
 #-include $(DEPS)
 
+flash: $(OBJ_DIR)/$(PROJECT).elf
+	stm8-objcopy -O ihex $(OBJ_DIR)/$(PROJECT).elf $(OBJ_DIR)/$(PROJECT).hex
+	stm8flash -c stlinkv21 -p $(DEVICE_FLASH) -s flash -w $(OBJ_DIR)/$(PROJECT).hex
+
 clean:
 	rm -rf $(OBJ_DIR)/
 
@@ -59,6 +65,7 @@ $(OBJ_DIR)/%.o: %.c $(OBJ_DIR)/%.d
 $(OBJ_DIR)/%.o: %.asm
 	@$(MKDIR) -p $(OBJ_DIR)
 	$(AS) $< $(AS_FLAGS) -o $@
+
 
 # ----------------------------------------
 # Phony targets
