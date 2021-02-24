@@ -6,18 +6,32 @@ void delay(void)
     for (uint16_t d = 0; d < 9000; d++) {
         for (uint8_t c = 0; c < 3; c++);
     }
+
 }
 
 
 void main(void)
 {
+    uint32_t a;
+    
+    CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1); // taktovat MCU na 16MHz
     GPIO_Init(GPIOC, GPIO_PIN_5, GPIO_MODE_OUT_PP_LOW_SLOW);
+
+    UART1_Init((uint32_t)115200, 
+               UART1_WORDLENGTH_8D,
+               UART1_STOPBITS_1,
+               UART1_PARITY_NO,
+               UART1_SYNCMODE_CLOCK_DISABLE,
+               UART1_MODE_TXRX_ENABLE
+              );
+    UART1_Cmd(ENABLE);
 
     while (1) {
         GPIO_WriteHigh(GPIOC, GPIO_PIN_5);
         delay();
         GPIO_WriteLow(GPIOC, GPIO_PIN_5);
         delay();
+        a = 23;
     }
 }
 
