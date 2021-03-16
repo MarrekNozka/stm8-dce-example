@@ -4,7 +4,7 @@
 void delay(void)
 {
     for (uint16_t d = 0; d < 9000; d++) {
-        for (uint8_t c = 0; c < 3; c++);
+        for (uint8_t c = 0; c < 30; c++);
     }
 
 }
